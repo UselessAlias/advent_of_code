@@ -27,7 +27,10 @@ class Grid:
     
     def put_space(self, space):
         self.grid[space.x][space.y] = space
-    
+
+    def find_values(self, value):
+        return [space for space in self if space.value == value]
+
     def reset(self):
         self.grid = [l.copy() for l in self.initial_grid]
 

@@ -21,3 +21,6 @@ class Space:
         if self.x == value.x:
             return self.y < value.y
         return self.x < value.x
+    
+    def __hash__(self):
+        return hash(str(self))
