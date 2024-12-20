@@ -1,4 +1,7 @@
 from . import aoc_2024_runner
+from utils import Grid
+
+from time import sleep
 
 MAX_X = 101
 MAX_Y = 103
@@ -27,6 +30,12 @@ def split_vector(vector_str):
     x, y = vector.split(",")
     return int(x.strip()), int(y.strip()) 
 
+def write_grid(grid, iteration):
+    with open("./robot_grids.txt", "at+") as f:
+        f.write(f"Iteration: {iteration}\n")
+        f.writelines(str(grid))
+        f.write((f"\n{'-' * MAX_Y}\n"))
+
 def solution(input_lines):
     robots = []
     for line in input_lines:
@@ -35,9 +44,18 @@ def solution(input_lines):
         vel_x, vel_y = split_vector(vel)
         robots.append(Robot(pos_x, pos_y, vel_x, vel_y))
 
+    grid = Grid([f"{'.' * MAX_Y}" for _ in range(MAX_X)])
+
+    i = 0
+
     for _ in range(100):
+        i += 1
         for robot in robots:
             robot.move()
+            grid_space = grid.get_space(robot.current_x, robot.current_y)
+            grid_space.value = 1 if grid_space.value == "." else grid_space.value + 1
+        grid.reset() 
+
     
     quads = [[],[],[],[]]
     for robot in robots:
@@ -55,6 +73,15 @@ def solution(input_lines):
     quad_sum = 1
     for quad in quads:
         quad_sum *= len(quad)
+
+    for _ in range(10000):
+        i += 1
+        for robot in robots:
+            robot.move()
+            grid_space = grid.get_space(robot.current_x, robot.current_y)
+            grid_space.value = 1 if grid_space.value == "." else grid_space.value + 1
+        write_grid(grid, i)
+        grid.reset()
 
     return quad_sum, None
 

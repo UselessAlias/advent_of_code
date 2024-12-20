@@ -32,8 +32,10 @@ class Guard:
         self.direction = Guard.right_turn[self.direction]
         self.movement = Guard.directions[self.direction]
 
-    def reset(self):
+    def reset(self, direction):
         self.occupying_space = self.initial_space
+        self.direction = direction
+        self.movement = Guard.directions[direction]
 
 class Space:
     def __init__(self,x,y,value):
@@ -51,8 +53,8 @@ class Grid:
     def __init__(self, input_lines):
         self.x_length = len(input_lines)
         self.y_length = len(input_lines[0])
-        self.initial_grid = self.generate_grid(input_lines)
-        self.grid = [l.copy() for l in self.initial_grid]
+        self.input_lines = input_lines
+        self.grid = self.generate_grid(input_lines)
         self.hit_barriers = []
 
     def generate_grid(self, input_lines):
@@ -94,7 +96,7 @@ class Grid:
         return guard
     
     def reset(self):
-        self.grid = [l.copy() for l in self.initial_grid]
+        self.grid = self.generate_grid(self.input_lines)
 
     def __repr__(self):
         return "\n".join([str(row) for row in self.grid])
@@ -113,7 +115,7 @@ class Grid:
         if self._iter_y >= self.y_length:
             self._iter_x += 1
             self._iter_y = 0
-        if self._iter_x >= self.x_length:
+        if not current_space:
             raise StopIteration()
         return current_space
     
@@ -122,7 +124,7 @@ def guard_loops(grid, guard):
     while guard.occupying_space:
         grid.step_guard(guard)
         step_count += 1
-        if step_count == 50000:
+        if step_count == 10000:
             return True
     return False
 
@@ -143,12 +145,12 @@ def solution(input_lines):
         if space.value in [BARRIER]:
             continue
         else:
-            guard.reset()
+            guard.reset("U")
             replacement_barrier = Space(space.x, space.y, BARRIER)
             grid.put_space(replacement_barrier)
             if guard_loops(grid, guard):
                 loop_count += 1
-            grid.put_space(space)
+            grid.reset()
             
     return pass_through_count, loop_count
 

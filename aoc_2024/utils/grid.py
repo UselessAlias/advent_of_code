@@ -4,8 +4,8 @@ class Grid:
     def __init__(self, input_lines):
         self.x_length = len(input_lines)
         self.y_length = len(input_lines[0])
-        self.initial_grid = self.generate_grid(input_lines)
-        self.grid = [l.copy() for l in self.initial_grid]
+        self.input_lines = input_lines
+        self.grid = self.generate_grid(input_lines)
 
     def generate_grid(self, input_lines):
         grid = []
@@ -32,13 +32,13 @@ class Grid:
         return [space for space in self if space.value == value]
 
     def reset(self):
-        self.grid = [l.copy() for l in self.initial_grid]
+        self.grid = self.generate_grid(self.input_lines)
 
     def __repr__(self):
-        return "\n".join([str(row) for row in self.grid])
+        return "\n".join([''.join([str(space) for space in row]) for row in self.grid])
     
     def __str__(self):
-        return "\n".join([str(row) for row in self.grid])
+        return "\n".join([''.join([str(space) for space in row]) for row in self.grid])
     
     def __iter__(self):
         self._iter_x = 0
